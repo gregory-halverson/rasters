@@ -43,7 +43,6 @@ from pyproj import CRS, Transformer
 from pyproj import transform
 from pyproj._crs import _CRS
 
-import pykdtree
 from scipy.spatial import cKDTree
 from pyresample import SwathDefinition, AreaDefinition
 from pyresample.kd_tree import get_neighbour_info, get_sample_from_neighbour_info

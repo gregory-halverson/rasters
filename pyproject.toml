@@ -21,7 +21,7 @@ dependencies = [
     "matplotlib",
     "msgpack",
     "msgpack_numpy",
-    "numpy",
+    "numpy<2",
     "pygeos",
     "pyproj",
     "rasterio",
