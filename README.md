@@ -91,6 +91,332 @@ raster
 ```
 
 ![png](examples/Opening%20a%20GeoTIFF_3_0.png)
+
+## Usage
+
+### Working with Raster Objects
+
+The `Raster` class is the primary interface for working with raster data. It encapsulates both the data array and its georeferencing information.
+
+#### Opening and Creating Rasters
+
+```python
+from rasters import Raster
+
+# Open a raster from file
+raster = Raster.open("path/to/file.tif")
+
+# Create a raster from a numpy array and geometry
+import numpy as np
+from rasters import RasterGrid
+
+data = np.random.rand(100, 100)
+geometry = RasterGrid.from_bbox(
+    xmin=-120, ymin=30, xmax=-110, ymax=40,
+    cell_size=0.1
+)
+raster = Raster(data, geometry=geometry)
+```
+
+#### Raster Properties
+
+```python
+# Access the data array
+array = raster.array
+
+# Get dimensions
+rows, cols = raster.shape
+print(f"Raster size: {rows} rows x {cols} cols")
+
+# Get coordinate reference system
+crs = raster.crs
+
+# Get bounding box
+bbox = raster.bbox
+
+# Get cell size
+cell_size = raster.cell_size
+```
+
+#### Raster Operations
+
+```python
+# Arithmetic operations
+raster_sum = raster1 + raster2
+raster_diff = raster1 - raster2
+raster_product = raster1 * raster2
+raster_quotient = raster1 / raster2
+
+# Comparison operations
+mask = raster > 0.5
+
+# Reproject to different coordinate system
+reprojected = raster.reproject(crs="EPSG:4326", target_cell_size=0.01)
+
+# Resample to a different geometry
+resampled = raster.to_geometry(target_geometry, resampling="bilinear")
+
+# Sample at a point
+from rasters import Point
+point = Point(-115, 35, crs="EPSG:4326")
+value = raster.to_point(point)
+```
+
+#### Saving Rasters
+
+```python
+# Save as GeoTIFF
+raster.to_geotiff("output.tif", compression="deflate")
+
+# Save as Cloud Optimized GeoTIFF (COG)
+raster.to_COG("output_cog.tif")
+
+# Save as GeoPackage
+raster.to_geopackage("output.gpkg")
+```
+
+#### Visualization
+
+```python
+# Display in Jupyter notebook (automatic when last line in cell)
+raster
+
+# Create a matplotlib figure
+fig = raster.imshow(
+    title="My Raster",
+    cmap="viridis",
+    figsize=(10, 8)
+)
+
+# Save as image
+image = raster.to_pillow(cmap="jet")
+image.save("preview.png")
+```
+
+### Working with RasterGrid
+
+The `RasterGrid` class represents gridded raster geometry with uniform cell spacing and north-oriented grids.
+
+#### Creating RasterGrid Objects
+
+```python
+from rasters import RasterGrid
+
+# From bounding box and cell size
+grid = RasterGrid.from_bbox(
+    xmin=-120, ymin=30, xmax=-110, ymax=40,
+    cell_size=0.001,
+    crs="EPSG:4326"
+)
+
+# From bounding box and shape
+grid = RasterGrid.from_bbox(
+    xmin=-120, ymin=30, xmax=-110, ymax=40,
+    shape=(1000, 1000),
+    crs="EPSG:4326"
+)
+
+# From affine transform
+from affine import Affine
+affine = Affine(0.001, 0, -120, 0, -0.001, 40)
+grid = RasterGrid.from_affine(affine, rows=1000, cols=1000, crs="EPSG:4326")
+
+# From coordinate vectors
+x_vector = np.linspace(-120, -110, 1000)
+y_vector = np.linspace(30, 40, 1000)
+grid = RasterGrid.from_vectors(x_vector, y_vector, crs="EPSG:4326")
+
+# From a raster file
+grid = RasterGrid.open("path/to/file.tif")
+```
+
+#### RasterGrid Properties
+
+```python
+# Get grid dimensions
+rows = grid.rows
+cols = grid.cols
+
+# Get cell size
+cell_width = grid.cell_width
+cell_height = grid.cell_height
+
+# Get extent
+xmin, ymin = grid.xmin, grid.ymin
+xmax, ymax = grid.xmax, grid.ymax
+width, height = grid.width, grid.height
+
+# Get coordinate arrays
+x = grid.x  # 2D array of x-coordinates
+y = grid.y  # 2D array of y-coordinates
+
+# Get coordinate vectors
+x_vector = grid.x_vector  # 1D array of x-coordinates
+y_vector = grid.y_vector  # 1D array of y-coordinates
+
+# Get affine transform
+affine = grid.affine
+```
+
+#### RasterGrid Operations
+
+```python
+# Subset to a region
+from rasters import BBox
+subset_bbox = BBox(-115, 32, -112, 38, crs="EPSG:4326")
+subset_grid = grid.subset(subset_bbox)
+
+# Slice using indices
+subset_grid = grid[100:200, 150:250]
+
+# Change resolution
+rescaled_grid = grid.rescale(cell_size=0.002)
+
+# Buffer the grid
+buffered_grid = grid.buffer(pixels=10)
+
+# Shift the grid
+shifted_grid = grid.shift_xy(x_shift=100, y_shift=50)
+```
+
+### Working with RasterGeolocation
+
+The `RasterGeolocation` class represents swath raster geometry using 2D geolocation arrays, commonly used for satellite swath data.
+
+#### Creating RasterGeolocation Objects
+
+```python
+from rasters import RasterGeolocation
+import numpy as np
+
+# From x and y coordinate arrays
+x_coords = np.random.uniform(-120, -110, (500, 500))
+y_coords = np.random.uniform(30, 40, (500, 500))
+geolocation = RasterGeolocation(x_coords, y_coords, crs="EPSG:4326")
+
+# From coordinate vectors (creates meshgrid)
+x_vector = np.linspace(-120, -110, 500)
+y_vector = np.linspace(30, 40, 500)
+geolocation = RasterGeolocation.from_vectors(x_vector, y_vector, crs="EPSG:4326")
+```
+
+#### RasterGeolocation Properties
+
+```python
+# Get dimensions
+rows = geolocation.rows
+cols = geolocation.cols
+
+# Get coordinate arrays
+x = geolocation.x  # 2D array of x-coordinates
+y = geolocation.y  # 2D array of y-coordinates
+
+# Get extent
+xmin, ymin = geolocation.x_min, geolocation.y_min
+xmax, ymax = geolocation.x_max, geolocation.y_max
+
+# Get cell size (estimated from median distances)
+cell_size = geolocation.cell_size
+
+# Get boundary polygon
+boundary = geolocation.boundary
+```
+
+#### RasterGeolocation Operations
+
+```python
+# Index with geometry
+from rasters import Polygon
+polygon = Polygon([(-115, 32), (-112, 32), (-112, 38), (-115, 38)])
+mask = geolocation.index(polygon)
+
+# Generate a regular grid from geolocation
+grid = geolocation.grid
+
+# Resize geolocation arrays
+resized = geolocation.resize(dimensions=(250, 250))
+
+# Subset to a region
+subset = geolocation.subset(polygon)
+```
+
+### Working with Points and Vector Geometries
+
+```python
+from rasters import Point, Polygon, BBox
+
+# Create a point
+point = Point(-115.5, 35.2, crs="EPSG:4326")
+
+# Transform point to different CRS
+utm_point = point.to_crs("EPSG:32611")
+
+# Create a polygon
+polygon = Polygon([
+    (-115, 32),
+    (-112, 32),
+    (-112, 38),
+    (-115, 38)
+], crs="EPSG:4326")
+
+# Create a bounding box
+bbox = BBox(xmin=-120, ymin=30, xmax=-110, ymax=40, crs="EPSG:4326")
+
+# Sample raster at point
+value = raster.to_point(point)
+
+# Clip raster to polygon
+clipped = raster.subset(polygon)
+```
+
+### Advanced Usage
+
+#### Merging Multiple Rasters
+
+```python
+# Open multiple rasters
+raster1 = Raster.open("tile1.tif")
+raster2 = Raster.open("tile2.tif")
+raster3 = Raster.open("tile3.tif")
+
+# Merge into a single raster
+merged = Raster.merge([raster1, raster2, raster3])
+```
+
+#### Resampling with KDTree
+
+```python
+from rasters import KDTree
+
+# Create a KDTree for efficient resampling
+kd_tree = KDTree(
+    source_geometry=source_raster.geometry,
+    target_geometry=target_grid,
+    radius_of_influence=1000  # meters
+)
+
+# Resample using the KDTree
+resampled = source_raster.resample(target_grid, kd_tree=kd_tree)
+
+# Save KDTree for reuse
+kd_tree.save("kdtree.pkl")
+
+# Load KDTree
+kd_tree = KDTree.load("kdtree.pkl")
+```
+
+#### Working with Masks
+
+```python
+# Create a mask
+mask = raster > 0.5
+
+# Apply mask to raster
+masked_raster = raster.mask(mask)
+
+# Fill masked values with another raster
+filled = raster.fill(fill_raster)
+```
     
 ## Changelog
 
