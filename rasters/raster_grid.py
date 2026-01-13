@@ -159,25 +159,40 @@ class RasterGrid(RasterGeometry):
     @classmethod
     def from_bbox(
             cls,
-            bbox: Union[BBox, Tuple[float]],
+            bbox: Union[BBox, Tuple[float]] = None,
             shape: Tuple[int, int] = None,
             cell_size: float = None,
             cell_width: float = None,
             cell_height: float = None,
-            crs: Union[CRS, str] = None):
+            crs: Union[CRS, str] = None,
+            xmin: float = None,
+            ymin: float = None,
+            xmax: float = None,
+            ymax: float = None):
         from .bbox import BBox
+
+        # Handle either bbox or individual coordinates
+        if bbox is not None and any(coord is not None for coord in [xmin, ymin, xmax, ymax]):
+            raise ValueError("Provide either bbox parameter or individual xmin/ymin/xmax/ymax, not both")
+        
+        if bbox is None and any(coord is None for coord in [xmin, ymin, xmax, ymax]):
+            raise ValueError("When not providing bbox, all of xmin, ymin, xmax, ymax must be provided")
+        
+        if bbox is None and all(coord is None for coord in [xmin, ymin, xmax, ymax]):
+            raise ValueError("Must provide either bbox parameter or xmin, ymin, xmax, ymax")
 
         if (cell_width is None or cell_height is None) and cell_size is not None:
             cell_width = cell_size
             cell_height = -cell_size
 
-        if crs is None and isinstance(bbox, BBox):
-            crs = bbox.crs
+        if bbox is not None:
+            if crs is None and isinstance(bbox, BBox):
+                crs = bbox.crs
+            xmin, ymin, xmax, ymax = bbox
 
         if crs is None:
             crs = WGS84
 
-        xmin, ymin, xmax, ymax = bbox
         width = xmax - xmin
         height = ymax - ymin
         x_origin = xmin
