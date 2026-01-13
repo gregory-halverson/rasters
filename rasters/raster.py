@@ -61,6 +61,21 @@ class Raster:
             cmap=None,
             metadata: dict = None,
             **kwargs):
+        """
+        Initialize a Raster object.
+
+        Args:
+            array (Union[np.ndarray, Raster]): The raster data as a 2D numpy array or another Raster object.
+            geometry (RasterGeometry): The georeferencing information for the raster.
+            nodata (optional): Value representing no data in the raster. Defaults to None.
+            cmap (optional): Colormap for visualization. Defaults to None.
+            metadata (dict, optional): Metadata dictionary. Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Raises:
+            TypeError: If the array is not a valid numpy.ndarray.
+            ValueError: If the array is not two-dimensional.
+        """
         ALLOWED_ARRAY_TYPES = (
             np.ndarray,
             h5py.Dataset
@@ -111,10 +126,22 @@ class Raster:
 
     @property
     def array(self) -> np.ndarray:
+        """
+        Get the raster data array.
+
+        Returns:
+            np.ndarray: The raster data array.
+        """
         return self._array
 
     @property
     def dtype(self):
+        """
+        Get the data type of the raster array.
+
+        Returns:
+            The data type of the raster array.
+        """
         return self._array.dtype
 
     def __array_prepare__(self, other: Union[np.ndarray, Raster], *args, **kwargs) -> np.ndarray:
@@ -148,6 +175,15 @@ class Raster:
         return self.contain(other)
 
     def __add__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Add another raster or numpy array to this raster.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to add.
+
+        Returns:
+            Raster: A new Raster object with the result of the addition.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -161,6 +197,15 @@ class Raster:
     __radd__ = __add__
 
     def __sub__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Subtract another raster or numpy array from this raster.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to subtract.
+
+        Returns:
+            Raster: A new Raster object with the result of the subtraction.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -178,6 +223,15 @@ class Raster:
         return self.contain(-(self.array))
 
     def __mul__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Multiply this raster by another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to multiply.
+
+        Returns:
+            Raster: A new Raster object with the result of the multiplication.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -191,6 +245,15 @@ class Raster:
     __rmul__ = __mul__
 
     def __pow__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Raise this raster to a power using another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to raise to a power.
+
+        Returns:
+            Raster: A new Raster object with the result of the power operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -202,6 +265,15 @@ class Raster:
         return result
 
     def __rpow__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Raise another raster or numpy array to a power using this raster.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to raise to a power.
+
+        Returns:
+            Raster: A new Raster object with the result of the power operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -213,6 +285,15 @@ class Raster:
         return result
 
     def __div__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Divide this raster by another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to divide by.
+
+        Returns:
+            Raster: A new Raster object with the result of the division.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -224,6 +305,15 @@ class Raster:
         return result
 
     def __truediv__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Divide this raster by another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to divide by.
+
+        Returns:
+            Raster: A new Raster object with the result of the division.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -238,6 +328,15 @@ class Raster:
         return self.contain(other / self.array)
 
     def __floordiv__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Floor divide this raster by another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to divide by.
+
+        Returns:
+            Raster: A new Raster object with the result of the floor division.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -249,6 +348,15 @@ class Raster:
         return result
 
     def __mod__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Modulo this raster by another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to modulo by.
+
+        Returns:
+            Raster: A new Raster object with the result of the modulo operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -260,6 +368,15 @@ class Raster:
         return result
 
     def __lshift__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Left shift this raster by another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to shift by.
+
+        Returns:
+            Raster: A new Raster object with the result of the left shift operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -271,6 +388,15 @@ class Raster:
         return result
 
     def __rshift__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Right shift this raster by another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to shift by.
+
+        Returns:
+            Raster: A new Raster object with the result of the right shift operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -282,6 +408,15 @@ class Raster:
         return result
 
     def __and__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Bitwise AND this raster with another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to AND with.
+
+        Returns:
+            Raster: A new Raster object with the result of the bitwise AND operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -293,6 +428,15 @@ class Raster:
         return result
 
     def __or__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Bitwise OR this raster with another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to OR with.
+
+        Returns:
+            Raster: A new Raster object with the result of the bitwise OR operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -304,6 +448,15 @@ class Raster:
         return result
 
     def __xor__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Bitwise XOR this raster with another raster or numpy array.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to XOR with.
+
+        Returns:
+            Raster: A new Raster object with the result of the bitwise XOR operation.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -315,12 +468,31 @@ class Raster:
         return result
 
     def __invert__(self, *args, **kwargs) -> Raster:
+        """
+        Invert this raster.
+
+        Args:
+            *args: Positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Raster: The inverted raster.
+        """
         with np.errstate(invalid='ignore'):
             result = self.contain(self.array.__invert__(*args, **kwargs))
 
         return result
 
     def __lt__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Less than comparison.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to compare.
+
+        Returns:
+            Raster: A new Raster object with the result of the comparison.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -332,6 +504,15 @@ class Raster:
         return result
 
     def __le__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Less than or equal comparison.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to compare.
+
+        Returns:
+            Raster: A new Raster object with the result of the comparison.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -343,6 +524,15 @@ class Raster:
         return result
 
     def __gt__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Greater than comparison.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to compare.
+
+        Returns:
+            Raster: A new Raster object with the result of the comparison.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -354,6 +544,15 @@ class Raster:
         return result
 
     def __ge__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Greater than or equal comparison.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to compare.
+
+        Returns:
+            Raster: A new Raster object with the result of the comparison.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -365,6 +564,15 @@ class Raster:
         return result
 
     def __cmp__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Comparison.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to compare.
+
+        Returns:
+            Raster: A new Raster object with the result of the comparison.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -376,6 +584,15 @@ class Raster:
         return result
 
     def __eq__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Equal comparison.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to compare.
+
+        Returns:
+            Raster: A new Raster object with the result of the comparison.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -387,6 +604,15 @@ class Raster:
         return result
 
     def __ne__(self, other: Union[Raster, np.ndarray], *args, **kwargs) -> Raster:
+        """
+        Not equal comparison.
+
+        Args:
+            other (Union[Raster, np.ndarray]): The other raster or numpy array to compare.
+
+        Returns:
+            Raster: A new Raster object with the result of the comparison.
+        """
         if isinstance(other, Raster):
             data = other.array
         else:
@@ -417,6 +643,26 @@ class Raster:
             resampling: str = None,
             cmap: Union[Colormap, str] = None,
             **kwargs) -> Union[Raster, np.ndarray]:
+        """
+        Open a raster file.
+
+        Args:
+            filename (str): The path to the raster file.
+            nodata (optional): Value representing no data. Defaults to None.
+            remove (optional): Value to remove from the raster. Defaults to None.
+            geometry (Union[RasterGeometry, Point, MultiPoint]): The georeferencing information.
+            buffer (int, optional): Buffer size. Defaults to None.
+            window (Window, optional): Window to extract. Defaults to None.
+            resampling (str, optional): Resampling method. Defaults to None.
+            cmap (Union[Colormap, str], optional): Colormap for visualization. Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Union[Raster, np.ndarray]: The opened raster or numpy array.
+
+        Raises:
+            IOError: If the file not found.
+        """
         from .point import Point
         from .multi_point import MultiPoint
         from .raster_grid import RasterGrid
@@ -532,6 +778,22 @@ class Raster:
             crs: CRS = None,
             cell_size: float = None,
             dtype: str = None) -> Raster:
+        """
+        Merge multiple rasters into a single raster.
+
+        Args:
+            images (List[Raster]): The rasters to merge.
+            geometry (RasterGeometry, optional): The target geometry. Defaults to None.
+            crs (CRS, optional): The target CRS. Defaults to None.
+            cell_size (float, optional): The cell size. Defaults to None.
+            dtype (str, optional): The data type. Defaults to None.
+
+        Returns:
+            Raster: The merged raster.
+
+        Raises:
+            ValueError: If the images are not all the same size.
+        """
         if geometry is None:
             geometries = [image.geometry for image in images]
             geometry = RasterGrid.merge(geometries=geometries, crs=crs, cell_size=cell_size)
@@ -573,6 +835,17 @@ class Raster:
         raise IndexError(f"key unrecognized: {key}")
 
     def contain(self, array=None, geometry=None, nodata=None) -> Raster:
+        """
+        Create a new Raster object containing the given array and geometry.
+
+        Args:
+            array (optional): The raster data array. Defaults to the current array.
+            geometry (optional): The georeferencing information. Defaults to the current geometry.
+            nodata (optional): Value representing no data. Defaults to the current nodata value.
+
+        Returns:
+            Raster: A new Raster object.
+        """
         if array is None:
             array = self.array
 
@@ -1345,6 +1618,22 @@ class Raster:
             overwrite: bool = True,
             nodata: Any = None,
             **kwargs):
+        """
+        Save the raster to a file.
+
+        Args:
+            filename (str): The output file path.
+            driver (str, optional): The file format driver. Defaults to None.
+            compress (str, optional): Compression type. Defaults to None.
+            use_compression (bool, optional): Whether to use compression. Defaults to True.
+            overwrite (bool, optional): Whether to overwrite existing files. Defaults to True.
+            nodata (Any, optional): Value representing no data. Defaults to None.
+            **kwargs: Additional keyword arguments.
+
+        Raises:
+            ValueError: If the filename is invalid.
+            IOError: If the output file already exists and overwrite is False.
+        """
         if not isinstance(filename, str):
             raise ValueError("invalid filename")
 
@@ -1394,6 +1683,19 @@ class Raster:
             include_preview: bool = True,
             overwrite: bool = True,
             **kwargs):
+        """
+        Save the raster as a GeoTIFF file.
+
+        Args:
+            filename (str): The output file path.
+            compression (str, optional): Compression type. Defaults to None.
+            preview_quality (int, optional): Quality of the preview image. Defaults to 20.
+            cmap (Union[Colormap, str], optional): Colormap for visualization. Defaults to None.
+            use_compression (bool, optional): Whether to use compression. Defaults to True.
+            include_preview (bool, optional): Whether to include a preview image. Defaults to True.
+            overwrite (bool, optional): Whether to overwrite existing files. Defaults to True.
+            **kwargs: Additional keyword arguments.
+        """
         self.to_file(
             filename=filename,
             driver=GEOTIFF_DRIVER,
