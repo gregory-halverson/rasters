@@ -292,6 +292,19 @@ class RasterGeolocation(RasterGeometry):
         ])
 
     def resize(self, dimensions: Tuple[int, int], order: int = 2) -> RasterGeometry:
+        """
+        Resize the geolocation arrays to new dimensions.
+
+        Args:
+            dimensions (Tuple[int, int]): Target dimensions as (rows, cols).
+            order (int, optional): The order of the spline interpolation. Defaults to 2.
+
+        Returns:
+            RasterGeometry: A new RasterGeolocation object with resized dimensions.
+
+        Raises:
+            ValueError: If dimensions are not two-dimensional or not integers.
+        """
         if len(dimensions) != 2:
             raise ValueError("coordinate field dimensionality must be two-dimensional")
 
@@ -321,9 +334,25 @@ class RasterGeolocation(RasterGeometry):
 
     @property
     def grid(self) -> RasterGrid:
+        """
+        Generate a RasterGrid representation of the geolocation.
+
+        Returns:
+            RasterGrid: A RasterGrid object representing the geolocation.
+        """
         return self.generate_grid(dest_crs=self.crs)
 
     def to_dict(self, output_dict: Dict = None, write_geolocation_arrays: bool = False) -> Dict:
+        """
+        Convert the RasterGeolocation to a dictionary representation.
+
+        Args:
+            output_dict (Dict, optional): Dictionary to populate. Defaults to None.
+            write_geolocation_arrays (bool, optional): Whether to include geolocation arrays. Defaults to False.
+
+        Returns:
+            Dict: Dictionary representation of the RasterGeolocation.
+        """
         # FIXME this should conform to the CoverageJSON standard
         if output_dict is None:
             output_dict = {}
@@ -347,16 +376,18 @@ class RasterGeolocation(RasterGeometry):
             geometry: Union[SpatialGeometry, Tuple[float, float, float, float]],
             buffer: int = None) -> Window:
         """
-        Returns a rasterio.windows.Window covering the target geometry.
-        
+        Create a rasterio Window covering the target geometry.
+
         Args:
-            geometry: The geometry to create a window for
-            buffer: Optional buffer in pixels to add around the geometry
-            
+            geometry (Union[SpatialGeometry, Tuple[float, float, float, float]]): Geometry to create a window for.
+            buffer (int, optional): Buffer in pixels to add around the geometry. Defaults to None.
+
         Returns:
-            Window: A rasterio Window object covering the geometry
+            Window: A rasterio Window object covering the geometry.
+
+        Raises:
+            ValueError: If no points are found within the target geometry.
         """
-        
         mask = self.index(geometry)
         rows, cols = np.where(mask)
 
@@ -379,13 +410,13 @@ class RasterGeolocation(RasterGeometry):
 
     def subset(self, target: Union[Window, Point, Polygon, BBox, RasterGeometry]) -> 'RasterGeolocation':
         """
-        Subset the raster geolocation using a Window or other geometry.
-        
+        Subset the RasterGeolocation using a Window or other geometry.
+
         Args:
-            target: Window object or geometry to subset with
-            
+            target (Union[Window, Point, Polygon, BBox, RasterGeometry]): Target geometry or Window to subset with.
+
         Returns:
-            RasterGeolocation: A new RasterGeolocation object representing the subset
+            RasterGeolocation: A new RasterGeolocation object representing the subset.
         """
         if not isinstance(target, Window):
             target = self.window(target)
