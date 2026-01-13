@@ -25,13 +25,13 @@ from .CRS import WGS84
 
 from .raster_geometry import RasterGeometry
 from .wrap_geometry import wrap_geometry
+from .bbox import BBox
+from .point import Point
+from .polygon import Polygon
 
 if TYPE_CHECKING:
     from .CRS import CRS
     from .spatial_geometry import SpatialGeometry
-    from .bbox import BBox
-    from .point import Point
-    from .polygon import Polygon
     from .raster import Raster
 
 class RasterGrid(RasterGeometry):
@@ -524,8 +524,6 @@ class RasterGrid(RasterGeometry):
         Returns:
             Polygon: Polygon of the grid corners.
         """
-        from .polygon import Polygon
-
         return Polygon([
             (self.x_origin, self.y_origin),
             (self.x_origin + self.width, self.y_origin),
@@ -541,8 +539,6 @@ class RasterGrid(RasterGeometry):
         Returns:
             Polygon: Polygon of the grid corners in latitude/longitude.
         """
-        from .polygon import Polygon
-
         polygon = Polygon([
             (self.x_origin, self.y_origin),
             (self.x_origin + self.width, self.y_origin),
@@ -562,8 +558,6 @@ class RasterGrid(RasterGeometry):
         Returns:
             Polygon: Boundary polygon of the grid.
         """
-        from .polygon import Polygon
-
         if self.shape == (1, 1):
             return Polygon(LinearRing([
                 (self.x_min, self.y_max),
@@ -750,8 +744,6 @@ class RasterGrid(RasterGeometry):
         Returns:
             Tuple[slice, slice]: Slices representing the grid indices.
         """
-        from .point import Point
-
         geometry = wrap_geometry(geometry)
         xmin, ymin, xmax, ymax = geometry.bbox.transform(self.crs)
 
@@ -789,8 +781,6 @@ class RasterGrid(RasterGeometry):
         Returns:
             Window: Rasterio window object.
         """
-        from .point import Point
-
         geometry = wrap_geometry(geometry)
         xmin, ymin, xmax, ymax = geometry.bbox.transform(self.crs)
 
